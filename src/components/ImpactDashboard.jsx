@@ -1,77 +1,174 @@
-import { useEffect, useState } from 'react';
-import { Leaf, Recycle, TrendingUp, Trash2 } from 'lucide-react';
-import { getImpactStats } from '../utils/storage';
+import { Leaf, TrendingUp, Trash2 } from "lucide-react";
 
-export default function ImpactDashboard() {
-  const [stats, setStats] = useState(null);
-  const [animate, setAnimate] = useState(false);
-
-  useEffect(() => {
-    const data = getImpactStats();
-    setStats(data);
-    const timer = setTimeout(() => setAnimate(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (!stats || stats.totalScanned === 0) {
-    return (
-      <div className="glass-card p-5 mx-4 mb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-            <Recycle className="w-5 h-5 text-emerald-600" />
-          </div>
-          <div>
-            <h3 className="font-bold text-slate-800 text-sm">Aksi Hijau Kamu</h3>
-            <p className="text-slate-400 text-xs">Mulai pindai sampah untuk melacak kontribusimu!</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+export default function ImpactDashboard({ stats }) {
+  const empty = !stats || stats.totalScanned === 0;
+  const activeCategories = empty
+    ? 0
+    : Object.values(stats.categories).filter((v) => v > 0).length;
 
   return (
-    <div className="glass-card p-5 mx-4 mb-4 fade-in-up">
-      <div className="flex items-center gap-2 mb-4">
-        <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-          <TrendingUp className="w-4 h-4 text-emerald-600" />
-        </div>
-        <h3 className="font-bold text-slate-800 text-sm">Aksi Hijau Kamu</h3>
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-emerald-50 rounded-xl p-3 text-center">
-          <Trash2 className="w-5 h-5 text-emerald-500 mx-auto mb-1" />
-          <div className={`text-2xl font-extrabold text-emerald-700 ${animate ? 'count-up' : 'opacity-0'}`}>
-            {stats.totalScanned}
+    <div
+      className="relative overflow-hidden text-white"
+      style={{
+        borderRadius: 28,
+        padding: 20,
+        background:
+          "linear-gradient(135deg, #10b981 0%, #047857 60%, #064e3b 100%)",
+        boxShadow: "0 18px 48px -16px rgba(6, 95, 70, 0.55)",
+      }}>
+      <div
+        style={{
+          position: "absolute",
+          top: -60,
+          right: -60,
+          width: 180,
+          height: 180,
+          borderRadius: "50%",
+          background: "rgba(255,255,255,0.10)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          bottom: -50,
+          left: -30,
+          width: 140,
+          height: 140,
+          borderRadius: "50%",
+          background: "rgba(255,255,255,0.06)",
+        }}
+      />
+
+      <div className="relative">
+        <div className="flex items-center gap-2">
+          <div
+            className="flex items-center justify-center"
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: 10,
+              background: "rgba(255,255,255,0.18)",
+            }}>
+            <TrendingUp className="w-3.5 h-3.5" />
           </div>
-          <p className="text-emerald-600/70 text-[11px] font-medium mt-0.5">Sampah Dipilah</p>
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: "0.12em",
+              opacity: 0.85,
+            }}>
+            AKSI HIJAU KAMU
+          </span>
         </div>
-        <div className="bg-green-50 rounded-xl p-3 text-center">
-          <Leaf className="w-5 h-5 text-green-500 mx-auto mb-1" />
-          <div className={`text-2xl font-extrabold text-green-700 ${animate ? 'count-up' : 'opacity-0'}`}>
-            {stats.carbonReduced}<span className="text-sm font-bold"> kg</span>
+
+        <div className="flex items-end gap-2" style={{ marginTop: 16 }}>
+          <span
+            style={{
+              fontSize: 56,
+              lineHeight: 1,
+              fontWeight: 800,
+              letterSpacing: "-0.02em",
+            }}>
+            {empty ? 0 : stats.totalScanned}
+          </span>
+          <span
+            style={{
+              fontSize: 13,
+              fontWeight: 500,
+              opacity: 0.85,
+              marginBottom: 6,
+            }}>
+            item dipilah
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3" style={{ marginTop: 20 }}>
+          <div
+            style={{
+              borderRadius: 18,
+              padding: 12,
+              background: "rgba(255,255,255,0.16)",
+              border: "1px solid rgba(255,255,255,0.12)",
+            }}>
+            <Leaf
+              className="w-4 h-4"
+              style={{ opacity: 0.85, marginBottom: 6 }}
+            />
+            <p
+              style={{
+                fontSize: 10,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                opacity: 0.75,
+                fontWeight: 600,
+              }}>
+              CO₂ berkurang
+            </p>
+            <p style={{ fontSize: 18, fontWeight: 700, marginTop: 2 }}>
+              {empty ? "0" : stats.carbonReduced}
+              <span style={{ fontSize: 12, fontWeight: 500, opacity: 0.85 }}>
+                {" "}
+                kg
+              </span>
+            </p>
           </div>
-          <p className="text-green-600/70 text-[11px] font-medium mt-0.5">CO₂ Berkurang</p>
+          <div
+            style={{
+              borderRadius: 18,
+              padding: 12,
+              background: "rgba(255,255,255,0.16)",
+              border: "1px solid rgba(255,255,255,0.12)",
+            }}>
+            <Trash2
+              className="w-4 h-4"
+              style={{ opacity: 0.85, marginBottom: 6 }}
+            />
+            <p
+              style={{
+                fontSize: 10,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                opacity: 0.75,
+                fontWeight: 600,
+              }}>
+              Kategori aktif
+            </p>
+            <p style={{ fontSize: 18, fontWeight: 700, marginTop: 2 }}>
+              {activeCategories}
+              <span style={{ fontSize: 12, fontWeight: 500, opacity: 0.85 }}>
+                {" "}
+                jenis
+              </span>
+            </p>
+          </div>
         </div>
+
+        {!empty && activeCategories > 0 && (
+          <div className="grid grid-cols-3 gap-2" style={{ marginTop: 12 }}>
+            <Pill emoji="🌿" value={stats.categories.Organik} />
+            <Pill emoji="📦" value={stats.categories.Anorganik} />
+            <Pill emoji="⚠️" value={stats.categories.B3} />
+          </div>
+        )}
       </div>
-      {(stats.categories.Organik > 0 || stats.categories.Anorganik > 0 || stats.categories.B3 > 0) && (
-        <div className="flex gap-2 mt-3">
-          {stats.categories.Organik > 0 && (
-            <span className="flex-1 text-center py-1.5 rounded-lg bg-green-100 text-green-700 text-[11px] font-semibold">
-              🌿 Organik: {stats.categories.Organik}
-            </span>
-          )}
-          {stats.categories.Anorganik > 0 && (
-            <span className="flex-1 text-center py-1.5 rounded-lg bg-yellow-100 text-yellow-700 text-[11px] font-semibold">
-              📦 Anorganik: {stats.categories.Anorganik}
-            </span>
-          )}
-          {stats.categories.B3 > 0 && (
-            <span className="flex-1 text-center py-1.5 rounded-lg bg-red-100 text-red-700 text-[11px] font-semibold">
-              ⚠️ B3: {stats.categories.B3}
-            </span>
-          )}
-        </div>
-      )}
+    </div>
+  );
+}
+
+function Pill({ emoji, value }) {
+  return (
+    <div
+      style={{
+        textAlign: "center",
+        padding: "8px 0",
+        borderRadius: 14,
+        background: "rgba(255,255,255,0.10)",
+        fontSize: 11,
+        fontWeight: 700,
+      }}>
+      <span style={{ marginRight: 4 }}>{emoji}</span>
+      {value || 0}
     </div>
   );
 }
